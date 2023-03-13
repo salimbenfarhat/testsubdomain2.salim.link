@@ -1,0 +1,116 @@
+<html>
+  <head>
+    <title>Contact</title>
+    <meta charset="utf-8"/>
+  </head>
+  <body>
+    <h1>ME CONTACTER</h1>
+    <hr>
+    <h2>Laisser un message</h2>
+    <form name="contactForm_hodl3r">
+      Nom Complet: (*) <input type="text" id="fullname" name="fullname" required />
+      <p id="fullname_msg"></p>
+      Adresse Email: (*) <input type="email" id="email" name="email" required />
+      <p id="email_msg"></p>
+      Sujet (*) <select id="subject" name="subject" required />
+        <option>- Choisir un Sujet -</option>                    
+        <option value="prestations" >Prestations</option>
+        <option value="collaborations" >Collaborations</option>
+        <option value="assistance" >Assistance</option>
+        <option value="others" >Autres</option>
+      </select>
+      <p id="subject_msg"></p>
+      Message: (*) <textarea id="message" name="message" required ></textarea>
+      <p id="message_msg"></p>
+      Je confirme ne pas être un robot. (*) <input type="checkbox" name="human" id="human" value="yes" required /> 
+      <label for="human">OUI</label>
+      <p id="human_msg"></p>
+      <div
+        id="hcaptcha"
+        class="h-captcha"
+        data-sitekey="4afc2154-c913-4d22-bc3c-daae9696fd40"
+        data-callback="onSubmit"
+        data-size="invisible"
+      ></div>
+      <button type="submit" id="submit2">Laisser un message</button>
+    </form>
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+    <script>
+      const scriptURL = 'SCRIPT_URL'
+      const form = document.forms['contactForm_hodl3r']
+      
+      function onSubmit(token) {
+        alert('Merci de m\'avoir contacté. Je vous répondrai dès que possible.');
+        fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+          .then(response => console.log('Success!', response))
+          .catch(error => console.error('Error!', error.message))
+      }
+      
+      function validate(event) {
+        event.preventDefault();
+        
+        let field = [
+          ['fullname', document.getElementById('fullname')],
+          ['email', document.getElementById('email')],
+          ['subject', document.getElementById('subject')],
+          ['message', document.getElementById('message')],
+          ['human', document.getElementById('human')]
+        ];
+        let message = [
+          ['fullname', document.getElementById('fullname_msg')],
+          ['email', document.getElementById('email_msg')],
+          ['subject', document.getElementById('subject_msg')],
+          ['message', document.getElementById('message_msg')],
+          ['human', document.getElementById('human_msg')]
+        ];
+        let mailFormat = /[^\s@]+@[^\s@]+\.[^\s@]+/;
+
+        if (!field[0][1].value) {
+          message[0][1].innerHTML = 'Le champs "Nom Complet" est requis !';
+          field[0][1].focus();
+          return false;
+        } else if (!field[1][1].value) {
+          message[0][1].innerHTML = '';
+          message[1][1].innerHTML = 'Le champs "Email" est requis !';
+          field[1][1].focus();
+          return false;
+        } else if (!field[1][1].value.match(mailFormat)) {
+          message[0][1].innerHTML = '';
+          message[1][1].innerHTML = 'Le format du champs "Email" est invalide !';
+          field[1][1].focus();
+          return false;
+        } else if (!((field[2][1].value == 'prestations') || (field[2][1].value == 'collaborations') || (field[2][1].value == 'assistance') || (field[2][1].value == 'others'))) {
+          message[0][1].innerHTML = '';
+          message[1][1].innerHTML = '';
+          message[2][1].innerHTML = 'Le champs "Sujet" est requis !';
+          field[2][1].focus();
+          return false;
+        } else if (!field[3][1].value) {
+          message[0][1].innerHTML = '';
+          message[1][1].innerHTML = '';
+          message[2][1].innerHTML = '';
+          message[3][1].innerHTML = 'Le champs "Message" est requis !';
+          field[3][1].focus();
+          return false;
+        } else if (!field[4][1].checked) {
+          message[0][1].innerHTML = '';
+          message[1][1].innerHTML = '';
+          message[2][1].innerHTML = '';
+          message[3][1].innerHTML = '';
+          message[4][1].innerHTML = 'Merci de confirmer que vous êtes bien un humain !';
+          field[4][1].focus();
+          return false;
+        } else {
+          hcaptcha.execute();
+          return true;
+        }
+      }
+
+      function onload() {
+        var element = document.getElementById('submit2');
+        element.onclick = validate;
+      }
+      onload();
+    </script>
+  </body>
+</html>
